@@ -13,16 +13,18 @@ export function Topbar() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center gap-3 px-4 bg-white border-b border-navy-200">
       {/* Logo */}
-      <div className="flex items-center gap-2 w-16 shrink-0">
-        <div className="w-7 h-7 rounded-lg bg-brand-600 flex items-center justify-center">
-          <span className="text-white text-[10px] font-bold tracking-tight">NS</span>
+      <div className="flex items-center gap-2.5 w-20 shrink-0">
+        <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center shadow-sm hover:scale-105 transition-transform duration-200">
+          <span className="text-white text-xs font-bold tracking-tight">
+            NS
+          </span>
         </div>
       </div>
 
       {/* App name */}
       <div className="hidden lg:flex items-baseline gap-1.5">
-        <span className="text-sm font-semibold text-navy-900">NeuraShield</span>
-        <span className="text-xs text-navy-400">Intelligence Platform</span>
+        <span className="text-sm font-bold text-navy-900 tracking-tight">NeuraShield</span>
+        <span className="text-xs font-medium text-navy-400">Intelligence Platform</span>
       </div>
 
       <div className="flex-1" />
@@ -31,16 +33,16 @@ export function Topbar() {
       <button
         onClick={openCommand}
         className={cn(
-          "hidden md:flex items-center gap-2 h-8 px-3 rounded-md",
-          "border border-navy-200 bg-navy-50 text-navy-400",
-          "hover:bg-navy-100 hover:text-navy-600 transition-colors",
-          "text-sm w-56",
+          "hidden md:flex items-center gap-2 h-9 px-4 rounded-full",
+          "border border-navy-200 bg-navy-50 text-navy-500",
+          "hover:bg-navy-100/70 hover:text-navy-700 transition-all duration-200 shadow-sm",
+          "text-xs w-60",
         )}
       >
-        <Search size={13} />
-        <span className="flex-1 text-left text-xs">Search pages, modules…</span>
-        <kbd className="text-[10px] bg-white border border-navy-200 rounded px-1 py-0.5">
-          ⌘K
+        <Search size={14} className="text-navy-400" />
+        <span className="flex-1 text-left">Search pages, modules…</span>
+        <kbd className="text-[10px] text-navy-400 bg-white border border-navy-200 rounded px-1.5 py-0.5 select-none">
+          Ctrl + K
         </kbd>
       </button>
 

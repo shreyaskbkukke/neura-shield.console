@@ -2,43 +2,43 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Terminal, ShieldCheck, ArrowRight } from "lucide-react";
+import { ShieldCheck, ArrowRight, KeyRound } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/foundation/Button";
 import { ApiClientError } from "@/types/api";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setDevUser } = useAuthStore();
-  const [uuid, setUuid] = useState("");
+  const { setToken } = useAuthStore();
+  const [tokenInput, setTokenInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleConnect(e: React.FormEvent) {
+  async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
-    const trimmed = uuid.trim();
+    const trimmed = tokenInput.trim();
     if (!trimmed) return;
 
     setIsLoading(true);
     setError(null);
 
     try {
-      const { apiGet } = await import("@/lib/api/client");
-      // Temporarily set UUID in localStorage so apiGet picks it up
-      if (typeof window !== "undefined") {
-        localStorage.setItem("ns_dev_user_id", trimmed);
+      // Temporarily store token so apiGet picks it up for validation
+      if (globalThis.window !== undefined) {
+        localStorage.setItem("ns_auth_token", trimmed);
       }
+      const { apiGet } = await import("@/lib/api/client");
       await apiGet("/auth/me");
-      setDevUser(trimmed);
+      setToken(trimmed);
       router.replace("/dashboard");
     } catch (err) {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("ns_dev_user_id");
+      if (globalThis.window !== undefined) {
+        localStorage.removeItem("ns_auth_token");
       }
       if (err instanceof ApiClientError) {
         setError(`${err.code}: ${err.message}`);
       } else {
-        setError("Could not connect to backend. Is the server running?");
+        setError("Could not connect. Check that the backend is running.");
       }
     } finally {
       setIsLoading(false);
@@ -48,7 +48,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-navy-950 flex items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8">
-        {/* Logo */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-600">
             <ShieldCheck size={28} className="text-white" />
@@ -59,32 +58,33 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Card */}
         <div className="rounded-2xl border border-navy-700 bg-navy-900 p-7 space-y-5">
-          <div className="flex items-center gap-2 text-intelligence-400">
-            <Terminal size={13} />
+          <div className="flex items-center gap-2 text-brand-400">
+            <KeyRound size={13} />
             <span className="text-xs font-semibold tracking-wide uppercase">
-              Developer Mode
+              Sign In
             </span>
           </div>
 
           <div className="space-y-1">
-            <h2 className="text-white font-semibold">Connect as demo user</h2>
+            <h2 className="text-white font-semibold">Enter your access token</h2>
             <p className="text-xs text-navy-400">
-              Paste a user UUID from the backend database to sign in.
+              Paste the Bearer token issued by the Catalyst identity provider.
             </p>
           </div>
 
-          <form onSubmit={handleConnect} className="space-y-4">
+          <form onSubmit={handleSignIn} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-navy-300">
-                User UUID
+              <label htmlFor="bearer-token" className="text-xs font-medium text-navy-300">
+                Bearer Token
               </label>
-              <input
-                value={uuid}
-                onChange={(e) => setUuid(e.target.value)}
-                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                className="w-full h-10 rounded-lg bg-navy-800 border border-navy-600 px-3 text-sm text-white placeholder:text-navy-500 focus:outline-none focus:border-brand-500 font-mono"
+              <textarea
+                id="bearer-token"
+                value={tokenInput}
+                onChange={(e) => setTokenInput(e.target.value)}
+                placeholder="Paste your token here…"
+                rows={3}
+                className="w-full rounded-lg bg-navy-800 border border-navy-600 px-3 py-2.5 text-sm text-white placeholder:text-navy-500 focus:outline-none focus:border-brand-500 font-mono resize-none"
                 autoComplete="off"
                 spellCheck={false}
               />
@@ -97,31 +97,12 @@ export default function LoginPage() {
               type="submit"
               className="w-full"
               isLoading={isLoading}
-              disabled={!uuid.trim()}
+              disabled={!tokenInput.trim()}
             >
-              Connect
+              Sign In
               <ArrowRight size={14} />
             </Button>
           </form>
-
-          {/* Help */}
-          <div className="rounded-lg bg-navy-800 px-3 py-3 space-y-2">
-            <p className="text-[10px] text-navy-400 font-semibold uppercase tracking-wide">
-              Get user UUIDs
-            </p>
-            <code className="block text-[10px] text-intelligence-300 font-mono leading-relaxed">
-              cd neura-shield.backend<br />
-              .venv/bin/python -c &quot;<br />
-              &nbsp;&nbsp;import sys; sys.path.insert(0, &apos;src&apos;)<br />
-              &nbsp;&nbsp;from sqlalchemy import create_engine, select, text<br />
-              &nbsp;&nbsp;from core.config import settings<br />
-              &nbsp;&nbsp;e = create_engine(settings.SYNC_DATABASE_URL)<br />
-              &nbsp;&nbsp;with e.connect() as c:<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;for r in c.execute(text(&apos;SELECT id,email FROM users&apos;)):<br />
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(r.id, r.email)<br />
-              &quot;
-            </code>
-          </div>
         </div>
       </div>
     </div>

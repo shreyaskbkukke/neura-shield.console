@@ -1,21 +1,17 @@
 import { config } from "@/lib/config";
 import { ApiClientError, type ApiErrorEnvelope } from "@/types/api";
 
-function getDevUserId(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("ns_dev_user_id");
+function getToken(): string | null {
+  if (globalThis.window === undefined) return null;
+  return localStorage.getItem("ns_auth_token");
 }
 
 function buildHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
-
-  if (config.devAuthEnabled) {
-    const uid = getDevUserId() ?? config.defaultDevUserId;
-    if (uid) headers["X-Dev-User-Id"] = uid;
-  }
-
+  const token = getToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
 }
 
@@ -61,7 +57,7 @@ export async function apiPost<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(`${config.apiBaseUrl}${path}`, {
     method: "POST",
     headers: buildHeaders(),
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
   return parseResponse<T>(res);
 }
@@ -70,7 +66,7 @@ export async function apiPatch<T>(path: string, body?: unknown): Promise<T> {
   const res = await fetch(`${config.apiBaseUrl}${path}`, {
     method: "PATCH",
     headers: buildHeaders(),
-    body: body !== undefined ? JSON.stringify(body) : undefined,
+    body: body === undefined ? undefined : JSON.stringify(body),
   });
   return parseResponse<T>(res);
 }

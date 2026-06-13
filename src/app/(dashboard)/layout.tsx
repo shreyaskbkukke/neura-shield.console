@@ -1,16 +1,9 @@
 import { AppShell } from "@/components/layout/AppShell";
-import { DevUserSwitcher } from "@/components/dev/DevUserSwitcher";
-import { config } from "@/lib/config";
 
 export default function DashboardLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
-  return (
-    <AppShell>
-      {children}
-      {config.devAuthEnabled && <DevUserSwitcher />}
-    </AppShell>
-  );
+}>) {
+  return <AppShell>{children}</AppShell>;
 }

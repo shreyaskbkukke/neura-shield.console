@@ -7,32 +7,23 @@ interface AuthState {
   user: CurrentUser | null;
   isLoading: boolean;
   error: string | null;
-  devUserId: string | null;
 }
 
 interface AuthActions {
   loadMe: () => Promise<void>;
-  setDevUser: (userId: string) => void;
+  setToken: (token: string) => void;
   logout: () => void;
   hasPermission: (permission: string) => boolean;
   hasRole: (role: string) => boolean;
-}
-
-function readDevUserId(): string | null {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("ns_dev_user_id");
 }
 
 export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
   user: null,
   isLoading: false,
   error: null,
-  devUserId: null,
 
   loadMe: async () => {
-    const devUserId = readDevUserId();
-    set({ isLoading: true, error: null, devUserId });
-
+    set({ isLoading: true, error: null });
     try {
       const { apiGet } = await import("@/lib/api/client");
       const user = await apiGet<CurrentUser>("/auth/me");
@@ -46,19 +37,19 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
     }
   },
 
-  setDevUser: (userId: string) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("ns_dev_user_id", userId);
+  setToken: (token: string) => {
+    if (globalThis.window !== undefined) {
+      localStorage.setItem("ns_auth_token", token);
     }
-    set({ devUserId: userId, user: null, error: null });
+    set({ user: null, error: null });
     get().loadMe();
   },
 
   logout: () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("ns_dev_user_id");
+    if (globalThis.window !== undefined) {
+      localStorage.removeItem("ns_auth_token");
     }
-    set({ user: null, devUserId: null, error: null });
+    set({ user: null, error: null });
   },
 
   hasPermission: (permission: string) => {

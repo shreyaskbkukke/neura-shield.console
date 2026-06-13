@@ -1,8 +1,8 @@
 import { AlertCircle } from "lucide-react";
 import { PageSurface } from "@/components/foundation/PageSurface";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Card, CardContent } from "@/components/foundation/Card";
 import { RequirePermission } from "@/components/auth/RequirePermission";
+import { EarlyWarningsScreen } from "@/features/early-warnings/components/EarlyWarningsScreen";
 
 export default function EarlyWarningsPage() {
   return (
@@ -13,13 +13,7 @@ export default function EarlyWarningsPage() {
           description="Forecast-based decision-support signals for district risk management"
           icon={AlertCircle}
         />
-        <Card>
-          <CardContent className="py-16 text-center">
-            <p className="text-sm text-navy-400">
-              Phase 6 Step 5 — Forecasting + Policy UI coming next
-            </p>
-          </CardContent>
-        </Card>
+        <EarlyWarningsScreen />
       </PageSurface>
     </RequirePermission>
   );

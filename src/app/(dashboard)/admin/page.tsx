@@ -1,26 +1,47 @@
+"use client";
+
 import { Settings } from "lucide-react";
 import { PageSurface } from "@/components/foundation/PageSurface";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Card, CardContent } from "@/components/foundation/Card";
-import { RequirePermission } from "@/components/auth/RequirePermission";
+import { useAuthStore } from "@/stores/authStore";
+import { AccessDenied } from "@/components/auth/AccessDenied";
+import { Skeleton } from "@/components/foundation/Skeleton";
+import { AdminHubScreen } from "@/features/admin/components/AdminHubScreen";
 
 export default function AdminPage() {
-  return (
-    <RequirePermission permission="admin.manage_users">
+  const { user, isLoading, hasPermission } = useAuthStore();
+
+  if (isLoading) {
+    return (
       <PageSurface>
-        <PageHeader
-          title="Admin"
-          description="User management, admin jobs, and system configuration"
-          icon={Settings}
-        />
-        <Card>
-          <CardContent className="py-16 text-center">
-            <p className="text-sm text-navy-400">
-              Phase 6 Step 6 — Governance + Admin UI coming next
-            </p>
-          </CardContent>
-        </Card>
+        <div className="space-y-4 p-6">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-4 w-32" />
+        </div>
       </PageSurface>
-    </RequirePermission>
+    );
+  }
+
+  const hasAccess = user && (hasPermission("admin.manage_users") || hasPermission("audit.read"));
+
+  if (!hasAccess) {
+    return (
+      <PageSurface>
+        <AccessDenied permission="admin.manage_users OR audit.read" />
+      </PageSurface>
+    );
+  }
+
+  return (
+    <PageSurface>
+      <PageHeader
+        title="Admin Governance"
+        description="System health, audit tracking, role matrix, and deployment verification"
+        icon={Settings}
+      />
+      <div className="mt-6">
+        <AdminHubScreen />
+      </div>
+    </PageSurface>
   );
 }

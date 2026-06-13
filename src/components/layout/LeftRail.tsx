@@ -23,13 +23,13 @@ export function LeftRail() {
 
   return (
     <aside
-      className="fixed left-0 top-14 bottom-0 z-40 w-16 flex flex-col items-center py-3 gap-1 bg-navy-950 border-r border-navy-800"
-      onMouseLeave={clearActiveGroup}
+      className="w-20 h-full flex flex-col items-center py-4 gap-2 bg-navy-950 border-r border-navy-850"
     >
       {visibleGroups.map((group) => {
         const Icon = group.icon;
         const isHighlighted = activeGroupId === group.id;
         const isPathActive = activePathGroupId === group.id;
+        const isActive = isHighlighted || isPathActive;
 
         return (
           <button
@@ -39,15 +39,28 @@ export function LeftRail() {
               activeGroupId === group.id ? clearActiveGroup() : setActiveGroup(group.id)
             }
             title={group.label}
-            className={cn(
-              "flex flex-col items-center gap-1 w-12 py-2 rounded-lg transition-all text-center cursor-pointer",
-              isHighlighted || isPathActive
-                ? "bg-navy-800 text-brand-400"
-                : "text-navy-400 hover:bg-navy-900 hover:text-navy-200",
-            )}
+            className="group flex flex-col items-center w-full py-1 text-center cursor-pointer focus:outline-none"
           >
-            <Icon size={18} strokeWidth={isPathActive ? 2.5 : 1.75} />
-            <span className="text-[9px] font-medium leading-none tracking-wide">
+            {/* Material 3 Active Indicator Pill */}
+            <div
+              className={cn(
+                "flex items-center justify-center w-14 h-8 rounded-full transition-all duration-250 ease-out",
+                isActive
+                  ? "bg-brand-500/15 text-brand-400"
+                  : "text-navy-400 hover:bg-navy-900/50 hover:text-navy-200 group-hover:scale-105"
+              )}
+            >
+              <Icon size={20} strokeWidth={isPathActive ? 2.25 : 1.75} />
+            </div>
+            {/* M3 Navigation Label */}
+            <span
+              className={cn(
+                "mt-1.5 text-[11px] font-medium tracking-wide transition-colors duration-200 px-1 leading-tight",
+                isActive
+                  ? "text-brand-400 font-semibold"
+                  : "text-navy-400 group-hover:text-navy-200"
+              )}
+            >
               {group.label}
             </span>
           </button>

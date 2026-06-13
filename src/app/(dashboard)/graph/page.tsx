@@ -1,23 +1,20 @@
 import { Network } from "lucide-react";
 import { PageSurface } from "@/components/foundation/PageSurface";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Card, CardContent } from "@/components/foundation/Card";
+import { RequirePermission } from "@/components/auth/RequirePermission";
+import { GraphScreen } from "@/features/graph/components/GraphScreen";
 
 export default function GraphPage() {
   return (
     <PageSurface>
       <PageHeader
-        title="Graph View"
-        description="Relationship graph between offenders, cases, and locations"
+        title="Relationship Graph"
+        description="Expanded offender network, suspicious associations, and organized group candidates"
         icon={Network}
       />
-      <Card>
-        <CardContent className="py-16 text-center">
-          <p className="text-sm text-navy-400">
-            Phase 6 Step 3 — Graph + Relationship Intelligence coming next
-          </p>
-        </CardContent>
-      </Card>
+      <RequirePermission permission="criminology.read">
+        <GraphScreen />
+      </RequirePermission>
     </PageSurface>
   );
 }
