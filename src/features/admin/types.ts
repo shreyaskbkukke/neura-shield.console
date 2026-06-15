@@ -1,15 +1,34 @@
+export type UserStatus = "ACTIVE" | "SUSPENDED" | "DEACTIVATED";
+export type JurisdictionScope =
+  | "STATE"
+  | "DISTRICT"
+  | "POLICE_STATION"
+  | "CASE_ASSIGNED"
+  | "CUSTOM";
+
 export interface AdminUser {
   id: string;
-  catalyst_user_id: string;
+  catalyst_user_id: string | null;
   full_name: string;
   email: string;
   phone: string | null;
   designation: string | null;
   department: string | null;
+  badge_number: string | null;
+  status: UserStatus;
   is_active: boolean;
+  last_login_at: string | null;
   roles: string[];
   created_at: string;
   updated_at: string;
+}
+
+export interface UserJurisdiction {
+  id: string;
+  state: string | null;
+  district_id: string | null;
+  police_station_id: string | null;
+  scope: JurisdictionScope | null;
 }
 
 export interface UserListResponse {
@@ -23,7 +42,12 @@ export interface AdminRole {
   id: string;
   name: string;
   description: string | null;
+  is_builtin: boolean;
   created_at: string;
+}
+
+export interface AdminRoleDetail extends AdminRole {
+  permissions: AdminPermission[];
 }
 
 export interface RoleListResponse {
@@ -42,6 +66,78 @@ export interface PermissionListResponse {
   total: number;
   items: AdminPermission[];
 }
+
+// ── Request payloads ────────────────────────────────────────────────
+
+export interface CreateUserPayload {
+  email: string;
+  full_name: string;
+  phone?: string;
+  designation?: string;
+  department?: string;
+  badge_number?: string;
+  role_ids?: string[];
+  jurisdiction?: UpdateJurisdictionPayload;
+}
+
+export interface UpdateUserPayload {
+  full_name?: string;
+  phone?: string;
+  designation?: string;
+  department?: string;
+  badge_number?: string;
+}
+
+export interface UserStatusPayload {
+  status: UserStatus;
+}
+
+export interface AssignRolesPayload {
+  role_ids: string[];
+}
+
+export interface UpdateJurisdictionPayload {
+  state?: string;
+  district_id?: string;
+  police_station_id?: string;
+  scope?: JurisdictionScope;
+}
+
+export interface CreateRolePayload {
+  name: string;
+  description?: string;
+}
+
+export interface UpdateRolePayload {
+  name?: string;
+  description?: string;
+}
+
+export interface AssignPermissionsPayload {
+  permission_ids: string[];
+}
+
+export interface SetPasswordPayload {
+  new_password: string;
+}
+
+// ── Utility response types ──────────────────────────────────────────
+
+export interface SimpleMessageResponse {
+  message: string;
+}
+
+export interface InviteResponse {
+  message: string;
+  temp_password: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+  temp_password: string;
+}
+
+// ── Registry & jobs ─────────────────────────────────────────────────
 
 export interface ModelRegistryItem {
   id: string;
