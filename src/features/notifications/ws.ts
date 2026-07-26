@@ -1,5 +1,6 @@
 import { getNotificationClient } from "@/lib/ws/wsClient";
 import { useNotificationStore } from "@/stores/notificationStore";
+import { useWsStore } from "@/stores/wsStore";
 
 interface NotificationCreatedEvent {
   type: "notification_created";
@@ -19,7 +20,13 @@ export function setupNotificationWsHandlers(
     onInvalidate();
   });
 
+  useWsStore.getState().setChannelStatus("notifications", client.status);
+  const offStatus = client.onStatusChange((status) => {
+    useWsStore.getState().setChannelStatus("notifications", status);
+  });
+
   return () => {
     offCreated();
+    offStatus();
   };
 }

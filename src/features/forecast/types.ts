@@ -78,3 +78,72 @@ export interface ForecastEvaluationListResponse {
   items: ForecastEvaluation[];
   total: number;
 }
+
+export interface CrimeForecastFeature {
+  id: string;
+  feature_key: string;
+  entity_type: string;
+  entity_id: string;
+  district_id: string | null;
+  police_station_id: string | null;
+  crime_category_id: string | null;
+  period_start: string;
+  period_end: string;
+  granularity: string;
+
+  crime_count: number;
+  crime_count_7d: number;
+  crime_count_30d: number;
+  crime_count_90d: number;
+  previous_period_count: number;
+  growth_rate: number | null;
+  moving_average_3: number | null;
+  moving_average_6: number | null;
+
+  hotspot_count: number;
+  alert_count: number;
+  anomaly_count: number;
+  pattern_count: number;
+  repeat_offender_count: number;
+  high_risk_offender_count: number;
+
+  sociology_risk_score: number | null;
+  dominant_mo_count: number;
+  mo_diversity_score: number | null;
+  behavior_profile_count: number;
+  high_habitual_score_count: number;
+  graph_candidate_count: number;
+  financial_pattern_count: number;
+  money_trail_count: number;
+
+  source: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ForecastFeatureListResponse {
+  items: CrimeForecastFeature[];
+  total: number;
+}
+
+export interface ForecastFeatureFilters {
+  entity_type?: string;
+  granularity?: string;
+  district_id?: string;
+}
+
+export interface ForecastBacktestWindow {
+  id: string;
+  window_name: string;
+  train_start: string;
+  train_end: string;
+  test_start: string;
+  test_end: string;
+  granularity: string;
+  created_at: string;
+}
+
+export interface BacktestWindowListResponse {
+  items: ForecastBacktestWindow[];
+  total: number;
+}

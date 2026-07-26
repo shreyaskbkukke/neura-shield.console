@@ -1,5 +1,6 @@
 import { getAlertClient } from "@/lib/ws/wsClient";
 import { useAlertStore } from "@/stores/alertStore";
+import { useWsStore } from "@/stores/wsStore";
 
 interface AlertCreatedEvent {
   type: "alert_created";
@@ -20,7 +21,13 @@ export function setupAlertWsHandlers(
     onInvalidate();
   });
 
+  useWsStore.getState().setChannelStatus("alerts", client.status);
+  const offStatus = client.onStatusChange((status) => {
+    useWsStore.getState().setChannelStatus("alerts", status);
+  });
+
   return () => {
     offCreated();
+    offStatus();
   };
 }

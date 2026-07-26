@@ -139,6 +139,7 @@ export default function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@neurashield.local"
                   className="w-full rounded-lg bg-navy-800 border border-navy-600 pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-navy-500 focus:outline-none focus:border-brand-500"
+                  suppressHydrationWarning
                 />
               </div>
             </div>
@@ -164,6 +165,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full rounded-lg bg-navy-800 border border-navy-600 pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-navy-500 focus:outline-none focus:border-brand-500"
+                  suppressHydrationWarning
                 />
               </div>
             </div>

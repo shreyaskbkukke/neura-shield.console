@@ -6,6 +6,10 @@ import { config } from "@/lib/config";
 import { Activity, Server, Radio, Database, CheckCircle, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/foundation/Card";
 import { Badge } from "@/components/foundation/Badge";
+import { getChatClient, getAlertClient, getNotificationClient } from "@/lib/ws/wsClient";
+import { setupChatWsHandlers } from "@/features/assistant/ws";
+import { setupAlertWsHandlers } from "@/features/alerts/ws";
+import { setupNotificationWsHandlers } from "@/features/notifications/ws";
 
 interface HealthState {
   apiStatus: "loading" | "online" | "offline";
@@ -70,6 +74,22 @@ export function SystemHealthPanel() {
     checkHealth();
     const interval = setInterval(checkHealth, 30_000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Actively probe each WS channel rather than waiting for another page
+  // (assistant/alerts/notifications) to have opened the socket first.
+  useEffect(() => {
+    const teardownChat = setupChatWsHandlers();
+    const teardownAlerts = setupAlertWsHandlers(() => {});
+    const teardownNotifications = setupNotificationWsHandlers(() => {});
+    getChatClient().connect();
+    getAlertClient().connect();
+    getNotificationClient().connect();
+    return () => {
+      teardownChat();
+      teardownAlerts();
+      teardownNotifications();
+    };
   }, []);
 
   return (

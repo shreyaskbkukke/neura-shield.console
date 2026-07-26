@@ -3,7 +3,10 @@ import {
   listForecastRuns,
   listHotspotForecasts,
   listForecastEvaluations,
+  listForecastFeatures,
+  listBacktestWindows,
 } from "./api";
+import type { ForecastFeatureFilters } from "./types";
 
 export function useForecastRuns() {
   return useQuery({
@@ -23,5 +26,19 @@ export function useForecastEvaluations() {
   return useQuery({
     queryKey: ["forecast", "evaluations"],
     queryFn: () => listForecastEvaluations(),
+  });
+}
+
+export function useForecastFeatures(filters: ForecastFeatureFilters = {}) {
+  return useQuery({
+    queryKey: ["forecast", "features", filters],
+    queryFn: () => listForecastFeatures(filters),
+  });
+}
+
+export function useBacktestWindows() {
+  return useQuery({
+    queryKey: ["forecast", "backtest-windows"],
+    queryFn: () => listBacktestWindows(),
   });
 }

@@ -4,6 +4,7 @@ import {
   type ConversationThread,
   type ConversationMessage,
 } from "@/stores/assistantStore";
+import { useWsStore } from "@/stores/wsStore";
 
 interface TokenEvent {
   type: "chat.token";
@@ -55,8 +56,11 @@ export function setupChatWsHandlers(): () => void {
     store().setActiveThread(ev.thread.thread_id);
   });
 
+  store().setWsStatus(client.status);
+  useWsStore.getState().setChannelStatus("chat", client.status);
   const offStatus = client.onStatusChange((status) => {
     store().setWsStatus(status);
+    useWsStore.getState().setChannelStatus("chat", status);
   });
 
   return () => {

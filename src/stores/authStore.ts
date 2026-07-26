@@ -2,6 +2,7 @@
 
 import { create } from "zustand";
 import type { CurrentUser } from "@/types/auth";
+import { ApiClientError } from "@/types/api";
 
 interface AuthState {
   user: CurrentUser | null;
@@ -29,6 +30,17 @@ export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
       const user = await apiGet<CurrentUser>("/auth/me");
       set({ user, isLoading: false });
     } catch (err) {
+      // Only a server-confirmed rejection (401) means the token itself is
+      // bad — clear it so we don't keep retrying a token that will never
+      // work. A network/CORS-level failure leaves the token in place,
+      // since it may still be valid once the transient issue clears.
+      if (
+        err instanceof ApiClientError &&
+        err.status === 401 &&
+        globalThis.window !== undefined
+      ) {
+        localStorage.removeItem("ns_auth_token");
+      }
       set({
         user: null,
         isLoading: false,
