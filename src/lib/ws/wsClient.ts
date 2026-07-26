@@ -30,7 +30,12 @@ export class WsClient {
     this.status = "connecting";
     this.notifyStatus();
 
-    const url = `${config.wsBaseUrl}${this.path}`;
+    const token =
+      globalThis.window === undefined
+        ? null
+        : localStorage.getItem("ns_auth_token");
+    const query = token ? `?token=${encodeURIComponent(token)}` : "";
+    const url = `${config.wsBaseUrl}${this.path}${query}`;
     this.socket = new WebSocket(url);
 
     this.socket.onopen = () => {
