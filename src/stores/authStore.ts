@@ -20,7 +20,7 @@ interface AuthActions {
 
 export const useAuthStore = create<AuthState & AuthActions>((set, get) => ({
   user: null,
-  isLoading: false,
+  isLoading: true,
   error: null,
 
   loadMe: async () => {
