@@ -20,4 +20,4 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 EXPOSE 9000
-CMD ["sh", "-c", "npm run start -- -p ${X_ZOHO_CATALYST_LISTEN_PORT:-9000}"]
+CMD ["sh", "-c", "npm run start -- -p ${X_ZOHO_CATALYST_LISTEN_PORT:-${PORT:-9000}}"]
