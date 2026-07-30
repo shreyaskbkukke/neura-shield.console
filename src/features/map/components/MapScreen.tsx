@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FilterBar, FilterSelect } from "@/components/grounded/FilterBar";
 import { RiskLegend } from "@/components/map/RiskLegend";
 import { ErrorState } from "@/components/foundation/ErrorState";
-import { DisclaimerBox } from "@/components/grounded/DisclaimerBox";
+import { HotspotGoogleMap } from "./HotspotGoogleMap";
 import { SpatialRiskGrid } from "./SpatialRiskGrid";
 import { HotspotDetailDrawer } from "./HotspotDetailDrawer";
 import { useHotspots, useDistrictRiskList } from "../hooks";
@@ -58,9 +58,10 @@ export function MapScreen() {
         </div>
       </div>
 
-      <DisclaimerBox
-        text="Geo Intelligence view — GIS map rendering requires MapLibre (not installed). Showing spatial risk summary view."
-        compact
+      <HotspotGoogleMap
+        hotspots={hotspotsQuery.data?.items ?? []}
+        selectedId={selectedHotspotId}
+        onSelectHotspot={setSelectedHotspotId}
       />
 
       {hotspotsQuery.isError ? (

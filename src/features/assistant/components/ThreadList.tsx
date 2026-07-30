@@ -11,7 +11,6 @@ interface ThreadListProps {
   activeThreadId: string | null;
   isLoading: boolean;
   onSelect: (threadId: string) => void;
-  wsConnected: boolean;
 }
 
 export function ThreadList({
@@ -19,7 +18,6 @@ export function ThreadList({
   activeThreadId,
   isLoading,
   onSelect,
-  wsConnected,
 }: ThreadListProps) {
   return (
     <div className="flex flex-col h-full">
@@ -28,7 +26,6 @@ export function ThreadList({
         <p className="text-xs font-semibold text-navy-700">Conversations</p>
         <button
           onClick={() => requestNewThread()}
-          disabled={!wsConnected}
           title="New conversation"
           className="rounded-lg p-1.5 text-navy-500 hover:bg-navy-100 hover:text-navy-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >

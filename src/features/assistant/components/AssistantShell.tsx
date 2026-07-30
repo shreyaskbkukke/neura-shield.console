@@ -87,7 +87,6 @@ export function AssistantShell() {
           activeThreadId={activeThreadId}
           isLoading={threadsQuery.isLoading}
           onSelect={setActiveThread}
-          wsConnected={wsStatus === "connected"}
         />
       </div>
 

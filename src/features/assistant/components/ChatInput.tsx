@@ -16,7 +16,7 @@ export function ChatInput({ threadId, isStreaming, disabled }: ChatInputProps) {
 
   function handleSend() {
     const trimmed = content.trim();
-    if (!trimmed || !threadId || isStreaming || disabled) return;
+    if (!trimmed || isStreaming || disabled) return;
     sendChatMessage(threadId, trimmed);
     setContent("");
     textareaRef.current?.focus();
@@ -29,7 +29,14 @@ export function ChatInput({ threadId, isStreaming, disabled }: ChatInputProps) {
     }
   }
 
-  const canSend = !!content.trim() && !!threadId && !isStreaming && !disabled;
+  const canSend = !!content.trim() && !isStreaming && !disabled;
+
+  let placeholder = "Ask a question… (Enter to send, Shift+Enter for newline)";
+  if (isStreaming) {
+    placeholder = "Waiting for response…";
+  } else if (!threadId) {
+    placeholder = "Ask a question to start a new conversation…";
+  }
 
   return (
     <div className="border-t border-navy-100 bg-white px-4 py-3">
@@ -39,14 +46,8 @@ export function ChatInput({ threadId, isStreaming, disabled }: ChatInputProps) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={
-            !threadId
-              ? "Select or create a conversation to start chatting…"
-              : isStreaming
-                ? "Waiting for response…"
-                : "Ask a question… (Enter to send, Shift+Enter for newline)"
-          }
-          disabled={!threadId || isStreaming || disabled}
+          placeholder={placeholder}
+          disabled={isStreaming || disabled}
           rows={1}
           className="flex-1 resize-none bg-transparent text-sm text-navy-800 placeholder:text-navy-400 focus:outline-none disabled:opacity-50"
           style={{ minHeight: "24px", maxHeight: "120px" }}

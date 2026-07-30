@@ -1,4 +1,5 @@
 import { Bot, User } from "lucide-react";
+import ReactMarkdown, { type Components } from "react-markdown";
 import { CitationPanel } from "./CitationPanel";
 import { GuardrailNotice } from "./GuardrailNotice";
 import { ToolCallTimeline } from "./ToolCallTimeline";
@@ -9,7 +10,17 @@ interface ChatMessageBubbleProps {
   message: ConversationMessage;
 }
 
-export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
+const markdownComponents: Components = {
+  p: (props) => <p className="mb-2" {...props} />,
+  ul: (props) => <ul className="mb-2 ml-4 list-disc space-y-0.5" {...props} />,
+  ol: (props) => <ol className="mb-2 ml-4 list-decimal space-y-0.5" {...props} />,
+  strong: (props) => <strong className="font-semibold text-navy-900" {...props} />,
+  a: (props) => (
+    <a className="text-brand-600 underline underline-offset-2" target="_blank" rel="noreferrer" {...props} />
+  ),
+};
+
+export function ChatMessageBubble({ message }: Readonly<ChatMessageBubbleProps>) {
   const isUser = message.role === "user";
 
   if (isUser) {
@@ -35,7 +46,11 @@ export function ChatMessageBubble({ message }: ChatMessageBubbleProps) {
       </div>
       <div className="flex-1 max-w-[80%] space-y-1">
         <div className="rounded-xl rounded-tl-none bg-navy-50 border border-navy-100 px-3 py-2.5">
-          <p className="text-sm text-navy-800 whitespace-pre-wrap leading-relaxed">{message.content}</p>
+          <div className="text-sm text-navy-800 leading-relaxed [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+            <ReactMarkdown components={markdownComponents}>
+              {message.content}
+            </ReactMarkdown>
+          </div>
           {message.intent && (
             <span className="mt-1.5 inline-block rounded bg-intelligence-50 border border-intelligence-100 px-1.5 py-0.5 text-[10px] text-intelligence-700 font-mono">
               {message.intent}
