@@ -98,7 +98,7 @@ export function SystemHealthPanel() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-lg font-bold text-navy-900">System Deployment & Health</h2>
-          <p className="text-xs text-navy-500">Live operational readiness status of the NeuraShield microservices.</p>
+          <p className="text-xs text-navy-500">Live operational readiness status of the Crime Lens microservices.</p>
         </div>
         <button
           onClick={checkHealth}

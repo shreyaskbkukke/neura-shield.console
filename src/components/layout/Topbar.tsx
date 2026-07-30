@@ -14,16 +14,16 @@ export function Topbar() {
     <header className="fixed top-0 left-0 right-0 z-50 h-14 flex items-center gap-3 px-4 bg-white border-b border-navy-200">
       {/* Logo */}
       <div className="flex items-center gap-2.5 w-20 shrink-0">
-        <div className="w-8 h-8 rounded-xl bg-brand-600 flex items-center justify-center shadow-sm hover:scale-105 transition-transform duration-200">
-          <span className="text-white text-xs font-bold tracking-tight">
-            NS
-          </span>
-        </div>
+        <img
+          src="/logo-192.png"
+          alt="Crime Lens"
+          className="w-8 h-8 object-contain hover:scale-105 transition-transform duration-200"
+        />
       </div>
 
       {/* App name */}
       <div className="hidden lg:flex items-baseline gap-1.5">
-        <span className="text-sm font-bold text-navy-900 tracking-tight">NeuraShield</span>
+        <span className="text-sm font-bold text-navy-900 tracking-tight">Crime Lens</span>
         <span className="text-xs font-medium text-navy-400">Intelligence Platform</span>
       </div>
 

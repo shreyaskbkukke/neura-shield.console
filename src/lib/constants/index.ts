@@ -1,4 +1,4 @@
-export const APP_NAME = "NeuraShield";
+export const APP_NAME = "Crime Lens";
 export const APP_TAGLINE = "Intelligence Platform";
 
 export const PAGINATION_DEFAULT_LIMIT = 50;

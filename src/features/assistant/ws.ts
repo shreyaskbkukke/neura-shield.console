@@ -144,7 +144,7 @@ export function setupChatWsHandlers(): () => void {
   const offError = client.on("error", (raw) => {
     const ev = raw as ErrorPayload;
     store().clearStreaming();
-    console.warn("[NeuraShield WS] chat error:", ev.code, ev.message);
+    console.warn("[Crime Lens WS] chat error:", ev.code, ev.message);
   });
 
   store().setWsStatus(client.status);

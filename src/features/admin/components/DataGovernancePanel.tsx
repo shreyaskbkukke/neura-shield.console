@@ -17,7 +17,7 @@ export function DataGovernancePanel() {
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="text-lg font-bold text-navy-900">Governance & Safety Policies</h2>
-        <p className="text-xs text-navy-500">Legal, administrative, and algorithmic guidelines for NeuraShield operations.</p>
+        <p className="text-xs text-navy-500">Legal, administrative, and algorithmic guidelines for Crime Lens operations.</p>
       </div>
 
       {/* Tabs */}
@@ -52,7 +52,7 @@ export function DataGovernancePanel() {
                   <h3 className="text-sm font-bold">Role-Based Access Controls (RBAC)</h3>
                 </div>
                 <p className="text-xs text-navy-600 leading-relaxed">
-                  NeuraShield operates a strict Role-Based Access Control model to gate operational actions and dashboard scopes. 
+                  Crime Lens operates a strict Role-Based Access Control model to gate operational actions and dashboard scopes. 
                   Users are assigned specifically configured roles (e.g. `ADMIN`, `STATE_OFFICER`, `ANALYST`) matching their official level.
                 </p>
                 <div className="p-3 rounded-lg bg-navy-50 border border-navy-100 text-[11px] text-navy-700 leading-relaxed">
@@ -135,7 +135,7 @@ export function DataGovernancePanel() {
                   <h3 className="text-sm font-bold">Statistical Disclaimer & Disclaimers</h3>
                 </div>
                 <p className="text-xs text-navy-600 leading-relaxed">
-                  Users of the NeuraShield dashboard must acknowledge the statistical boundaries of predictive and simulated data:
+                  Users of the Crime Lens dashboard must acknowledge the statistical boundaries of predictive and simulated data:
                 </p>
                 <div className="space-y-3">
                   <div className="p-3 rounded-lg border border-navy-100 bg-navy-50 space-y-1">
@@ -153,7 +153,7 @@ export function DataGovernancePanel() {
                   <div className="p-3 rounded-lg border border-navy-100 bg-navy-50 space-y-1">
                     <h4 className="text-xs font-semibold text-navy-800">Exported Reports Classified Status</h4>
                     <p className="text-[11px] text-navy-600 leading-relaxed">
-                      PDF and CSV files exported from the NeuraShield workspace are classified for official use only. System audit logs track the downloading user&apos;s details, and unauthorized dissemination is subject to policy violations.
+                      PDF and CSV files exported from the Crime Lens workspace are classified for official use only. System audit logs track the downloading user&apos;s details, and unauthorized dissemination is subject to policy violations.
                     </p>
                   </div>
                 </div>

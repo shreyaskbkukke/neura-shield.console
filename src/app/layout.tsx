@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "NeuraShield — Intelligence Platform",
+  title: "Crime Lens — Intelligence Platform",
   description: "AI-powered law enforcement intelligence and decision-support platform",
 };
 

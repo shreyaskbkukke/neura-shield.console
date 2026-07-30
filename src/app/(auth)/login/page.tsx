@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck, ArrowRight, Lock, Mail } from "lucide-react";
+import { ArrowRight, Lock, Mail } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/foundation/Button";
 import { ApiClientError } from "@/types/api";
@@ -85,11 +85,7 @@ export default function LoginPage() {
   if (isChecking) {
     return (
       <div className="min-h-screen bg-navy-950 flex items-center justify-center">
-        <div className="w-10 h-10 rounded-2xl bg-brand-600 flex items-center justify-center shadow-lg">
-          <span className="text-white text-sm font-bold tracking-wider">
-            NS
-          </span>
-        </div>
+        <img src="/logo-192.png" alt="Crime Lens" className="w-10 h-10 object-contain shadow-lg" />
       </div>
     );
   }
@@ -99,11 +95,11 @@ export default function LoginPage() {
       <div className="w-full max-w-sm space-y-8">
         {/* Logo */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-600">
-            <ShieldCheck size={28} className="text-white" />
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-navy-900 border border-navy-700">
+            <img src="/logo-192.png" alt="Crime Lens" className="w-10 h-10 object-contain" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">NeuraShield</h1>
+            <h1 className="text-2xl font-bold text-white">Crime Lens</h1>
             <p className="text-sm text-navy-400">Intelligence Platform</p>
           </div>
         </div>
@@ -137,7 +133,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@neurashield.local"
+                  placeholder="you@crimelens.local"
                   className="w-full rounded-lg bg-navy-800 border border-navy-600 pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-navy-500 focus:outline-none focus:border-brand-500"
                   suppressHydrationWarning
                 />

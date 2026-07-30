@@ -35,8 +35,8 @@ function networkToCanvas(
 }
 
 export function GraphScreen() {
-  const [offenderId, setOffenderId] = useState("");
-  const [offenderInput, setOffenderInput] = useState("");
+  const [offenderId, setOffenderId] = useState("154ee15e-9acd-43b7-85e1-88886118056f");
+  const [offenderInput, setOffenderInput] = useState("154ee15e-9acd-43b7-85e1-88886118056f");
   const [selectedNode, setSelectedNode] = useState<CanvasNode | null>(null);
 
   const networkQuery = useOffenderNetwork(offenderId || null);
