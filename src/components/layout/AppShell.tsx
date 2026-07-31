@@ -11,6 +11,7 @@ import { CommandSearch } from "./CommandSearch";
 
 import { useNavigationStore } from "@/stores/navigationStore";
 import { cn } from "@/lib/utils";
+import logoImg from "../../../public/logo-192.png";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, isLoading, loadMe } = useAuthStore();
@@ -54,7 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return (
       <div className="h-screen bg-navy-950 flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <img src="/logo-192.png" alt="Crime Lens" className="w-10 h-10 object-contain shadow-lg" />
+          <img src={logoImg.src} alt="Crime Lens" className="w-10 h-10 object-contain shadow-lg" />
           <span className="text-[10px] font-bold text-navy-400 uppercase tracking-widest animate-pulse">
             Initializing Platform
           </span>

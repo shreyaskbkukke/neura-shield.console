@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/lib/query/provider";
+import logoImg from "../../public/logo-192.png";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   title: "Crime Lens — Intelligence Platform",
   description: "AI-powered law enforcement intelligence and decision-support platform",
   icons: {
-    icon: "/favicon.ico",
+    icon: logoImg.src,
   },
 };
 

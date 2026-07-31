@@ -5,6 +5,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { useCommandStore } from "@/stores/commandStore";
 import { Button } from "@/components/foundation/Button";
 import { cn } from "@/lib/utils";
+import logoImg from "../../../public/logo-192.png";
 
 export function Topbar() {
   const { user, logout } = useAuthStore();
@@ -15,7 +16,7 @@ export function Topbar() {
       {/* Logo */}
       <div className="flex items-center gap-2.5 w-20 shrink-0">
         <img
-          src="/logo-192.png"
+          src={logoImg.src}
           alt="Crime Lens"
           className="w-8 h-8 object-contain hover:scale-105 transition-transform duration-200"
         />

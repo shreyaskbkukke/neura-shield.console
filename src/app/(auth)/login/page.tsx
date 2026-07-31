@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { Button } from "@/components/foundation/Button";
 import { ApiClientError } from "@/types/api";
 import { apiPost } from "@/lib/api/client";
+import logoImg from "../../../../public/logo-192.png";
 
 interface LoginResponse {
   token: string;
@@ -85,7 +86,7 @@ export default function LoginPage() {
   if (isChecking) {
     return (
       <div className="min-h-screen bg-navy-950 flex items-center justify-center">
-        <img src="/logo-192.png" alt="Crime Lens" className="w-10 h-10 object-contain shadow-lg" />
+        <img src={logoImg.src} alt="Crime Lens" className="w-10 h-10 object-contain shadow-lg" />
       </div>
     );
   }
@@ -96,7 +97,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center space-y-3">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-navy-900 border border-navy-700">
-            <img src="/logo-192.png" alt="Crime Lens" className="w-10 h-10 object-contain" />
+            <img src={logoImg.src} alt="Crime Lens" className="w-10 h-10 object-contain" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Crime Lens</h1>
