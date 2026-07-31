@@ -93,28 +93,38 @@ export function MapScreen() {
         </div>
       </div>
 
-      <HotspotGoogleMap
-        hotspots={filteredHotspots}
-        selectedId={selectedHotspotId}
-        onSelectHotspot={setSelectedHotspotId}
-      />
+      {/* Two Column Layout: Map on left, Data on right */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        {/* Left Side: Map Container */}
+        <div className="lg:col-span-7 xl:col-span-8 bg-white rounded-2xl shadow-sm lg:sticky lg:top-[72px]">
+          <HotspotGoogleMap
+            hotspots={filteredHotspots}
+            selectedId={selectedHotspotId}
+            onSelectHotspot={setSelectedHotspotId}
+            heightClass="h-[600px]"
+          />
+        </div>
 
-      {hotspotsQuery.isError ? (
-        <ErrorState
-          title="Failed to load hotspot data"
-          message={hotspotsQuery.error?.message}
-          onRetry={() => void hotspotsQuery.refetch()}
-        />
-      ) : (
-        <SpatialRiskGrid
-          hotspots={filteredHotspots}
-          districtRisk={districtRiskQuery.data?.items ?? []}
-          isLoadingHotspots={hotspotsQuery.isLoading}
-          isLoadingRisk={districtRiskQuery.isLoading}
-          selectedId={selectedHotspotId}
-          onSelectHotspot={setSelectedHotspotId}
-        />
-      )}
+        {/* Right Side: District overview and Hotspots list */}
+        <div className="lg:col-span-5 xl:col-span-4 h-[600px] overflow-y-auto pr-1 space-y-5">
+          {hotspotsQuery.isError ? (
+            <ErrorState
+              title="Failed to load hotspot data"
+              message={hotspotsQuery.error?.message}
+              onRetry={() => void hotspotsQuery.refetch()}
+            />
+          ) : (
+            <SpatialRiskGrid
+              hotspots={filteredHotspots}
+              districtRisk={districtRiskQuery.data?.items ?? []}
+              isLoadingHotspots={hotspotsQuery.isLoading}
+              isLoadingRisk={districtRiskQuery.isLoading}
+              selectedId={selectedHotspotId}
+              onSelectHotspot={setSelectedHotspotId}
+            />
+          )}
+        </div>
+      </div>
 
       <HotspotDetailDrawer
         hotspotId={selectedHotspotId}

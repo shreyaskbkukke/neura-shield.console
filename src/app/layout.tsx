@@ -12,6 +12,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Crime Lens — Intelligence Platform",
   description: "AI-powered law enforcement intelligence and decision-support platform",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

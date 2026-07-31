@@ -34,21 +34,24 @@ interface HotspotGoogleMapProps {
   hotspots: HotspotListItem[];
   selectedId: string | null;
   onSelectHotspot: (id: string) => void;
+  heightClass?: string;
 }
 
-export function HotspotGoogleMap({ hotspots, selectedId, onSelectHotspot }: Readonly<HotspotGoogleMapProps>) {
+export function HotspotGoogleMap({ hotspots, selectedId, onSelectHotspot, heightClass }: Readonly<HotspotGoogleMapProps>) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
+
+  const containerHeight = heightClass ?? "h-[420px]";
 
   if (!apiKey) {
     return (
-      <div className="flex h-[420px] items-center justify-center rounded-xl border border-navy-200 bg-navy-50 text-sm text-navy-500">
+      <div className={`flex ${containerHeight} items-center justify-center rounded-xl border border-navy-200 bg-navy-50 text-sm text-navy-500`}>
         Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable the map view.
       </div>
     );
   }
 
   return (
-    <div className="h-[420px] w-full overflow-hidden rounded-xl border border-navy-200">
+    <div className={`${containerHeight} w-full overflow-hidden rounded-xl border border-navy-200`}>
       <APIProvider apiKey={apiKey}>
         <Map
           defaultCenter={KARNATAKA_CENTER}

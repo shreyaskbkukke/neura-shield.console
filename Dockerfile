@@ -18,5 +18,7 @@ ENV NODE_ENV=production
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.ts ./
 EXPOSE 9000
 CMD ["sh", "-c", "npm run start -- -p ${X_ZOHO_CATALYST_LISTEN_PORT:-${PORT:-9000}}"]
