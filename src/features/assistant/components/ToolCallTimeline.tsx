@@ -3,13 +3,13 @@ import { ChevronDown, ChevronRight, Wrench } from "lucide-react";
 import type { ToolTrace } from "@/stores/assistantStore";
 
 interface ToolCallTimelineProps {
-  traces: ToolTrace[];
+  traces: ToolTrace[] | null | undefined;
 }
 
 export function ToolCallTimeline({ traces }: ToolCallTimelineProps) {
   const [open, setOpen] = useState(false);
 
-  if (!traces.length) return null;
+  if (!traces?.length) return null;
 
   return (
     <div className="mt-2">

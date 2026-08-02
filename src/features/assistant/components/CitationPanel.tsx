@@ -3,13 +3,13 @@ import { ChevronDown, ChevronRight, BookOpen } from "lucide-react";
 import type { Citation } from "@/stores/assistantStore";
 
 interface CitationPanelProps {
-  citations: Citation[];
+  citations: Citation[] | null | undefined;
 }
 
 export function CitationPanel({ citations }: CitationPanelProps) {
   const [open, setOpen] = useState(false);
 
-  if (!citations.length) return null;
+  if (!citations?.length) return null;
 
   return (
     <div className="mt-2">

@@ -1,11 +1,11 @@
 import { AlertTriangle } from "lucide-react";
 
 interface GuardrailNoticeProps {
-  guardrails: string[];
+  guardrails: string[] | null | undefined;
 }
 
 export function GuardrailNotice({ guardrails }: GuardrailNoticeProps) {
-  if (!guardrails.length) return null;
+  if (!guardrails?.length) return null;
 
   return (
     <div className="rounded-lg border border-danger-200 bg-danger-50 px-3 py-2 flex items-start gap-2 mt-2">
