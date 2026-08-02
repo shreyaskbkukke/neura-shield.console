@@ -184,6 +184,8 @@ export function sendChatMessage(threadId: string | null, content: string): void 
     pendingUserContent = content;
   }
 
+  useAssistantStore.getState().setWaitingForResponse(true);
+
   getChatClient().send("user_message", {
     thread_id: threadId,
     message: content,

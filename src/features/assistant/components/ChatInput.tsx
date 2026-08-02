@@ -7,16 +7,23 @@ import { sendChatMessage } from "../ws";
 interface ChatInputProps {
   threadId: string | null;
   isStreaming: boolean;
+  isWaitingForResponse?: boolean;
   disabled?: boolean;
 }
 
-export function ChatInput({ threadId, isStreaming, disabled }: ChatInputProps) {
+export function ChatInput({
+  threadId,
+  isStreaming,
+  isWaitingForResponse,
+  disabled,
+}: ChatInputProps) {
   const [content, setContent] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isBusy = isStreaming || !!isWaitingForResponse;
 
   function handleSend() {
     const trimmed = content.trim();
-    if (!trimmed || isStreaming || disabled) return;
+    if (!trimmed || isBusy || disabled) return;
     sendChatMessage(threadId, trimmed);
     setContent("");
     textareaRef.current?.focus();
@@ -29,10 +36,10 @@ export function ChatInput({ threadId, isStreaming, disabled }: ChatInputProps) {
     }
   }
 
-  const canSend = !!content.trim() && !isStreaming && !disabled;
+  const canSend = !!content.trim() && !isBusy && !disabled;
 
   let placeholder = "Ask a question… (Enter to send, Shift+Enter for newline)";
-  if (isStreaming) {
+  if (isBusy) {
     placeholder = "Waiting for response…";
   } else if (!threadId) {
     placeholder = "Ask a question to start a new conversation…";
@@ -47,7 +54,7 @@ export function ChatInput({ threadId, isStreaming, disabled }: ChatInputProps) {
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          disabled={isStreaming || disabled}
+          disabled={isBusy || disabled}
           rows={1}
           className="flex-1 resize-none bg-transparent text-sm text-navy-800 placeholder:text-navy-400 focus:outline-none disabled:opacity-50"
           style={{ minHeight: "24px", maxHeight: "120px" }}
@@ -57,7 +64,7 @@ export function ChatInput({ threadId, isStreaming, disabled }: ChatInputProps) {
           disabled={!canSend}
           className="rounded-lg p-1.5 bg-brand-600 text-white hover:bg-brand-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
         >
-          {isStreaming ? (
+          {isBusy ? (
             <Loader2 size={14} className="animate-spin" />
           ) : (
             <Send size={14} />

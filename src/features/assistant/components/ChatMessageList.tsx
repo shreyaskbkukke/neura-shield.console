@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { ChatMessageBubble } from "./ChatMessageBubble";
 import { StreamingTokenMessage } from "./StreamingTokenMessage";
+import { LoadingScrambleMessage } from "./LoadingScrambleMessage";
 import { Skeleton } from "@/components/foundation/Skeleton";
 import { EmptyState } from "@/components/foundation/EmptyState";
 import { MessageSquare } from "lucide-react";
@@ -12,6 +13,7 @@ interface ChatMessageListProps {
   messages: ConversationMessage[];
   streamingContent: string;
   isStreaming: boolean;
+  isWaitingForResponse: boolean;
   isLoading: boolean;
 }
 
@@ -19,13 +21,14 @@ export function ChatMessageList({
   messages,
   streamingContent,
   isStreaming,
+  isWaitingForResponse,
   isLoading,
 }: ChatMessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages.length, isStreaming, streamingContent]);
+  }, [messages.length, isStreaming, streamingContent, isWaitingForResponse]);
 
   if (isLoading) {
     return (
@@ -37,7 +40,7 @@ export function ChatMessageList({
     );
   }
 
-  if (!messages.length && !isStreaming) {
+  if (!messages.length && !isStreaming && !isWaitingForResponse) {
     return (
       <div className="flex-1 flex items-center justify-center">
         <EmptyState
@@ -54,6 +57,7 @@ export function ChatMessageList({
       {messages.map((msg) => (
         <ChatMessageBubble key={msg.id} message={msg} />
       ))}
+      {isWaitingForResponse && !streamingContent && <LoadingScrambleMessage />}
       {isStreaming && streamingContent && (
         <StreamingTokenMessage content={streamingContent} />
       )}

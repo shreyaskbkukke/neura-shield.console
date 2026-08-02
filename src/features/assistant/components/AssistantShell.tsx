@@ -45,6 +45,7 @@ export function AssistantShell() {
     messages,
     streamingContent,
     isStreaming,
+    isWaitingForResponse,
     wsStatus,
     pendingDraft,
     setThreads,
@@ -61,11 +62,25 @@ export function AssistantShell() {
     if (threadsQuery.data) setThreads(threadsQuery.data);
   }, [threadsQuery.data, setThreads]);
 
-  // Sync REST messages into store when thread switches
+  // Sync REST messages into store when thread switches. Guarded against
+  // a real race: for a thread just created this session, this query
+  // fires the instant thread_started sets activeThreadId — before the
+  // backend has necessarily finished persisting the user's message
+  // (thread_started fires before language detection/translation/persist
+  // in chat_service.py). If that REST snapshot lands first, it comes
+  // back with fewer messages than the WS path already echoed locally;
+  // never let it shrink what we already know.
   useEffect(() => {
     if (messagesQuery.data && activeThreadId) {
-      setMessages(activeThreadId, messagesQuery.data);
+      const current = messages[activeThreadId] ?? [];
+      if (messagesQuery.data.length >= current.length) {
+        setMessages(activeThreadId, messagesQuery.data);
+      }
     }
+    // messages intentionally omitted — only the length-guard check
+    // needs its latest value at decision time (read via closure), not
+    // a reason to re-run this effect on every WS-driven message append.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messagesQuery.data, activeThreadId, setMessages]);
 
   // Connect WS and register handlers
@@ -79,7 +94,7 @@ export function AssistantShell() {
   const activeMessages = activeThreadId ? (messages[activeThreadId] ?? []) : [];
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] rounded-xl border border-navy-200 overflow-hidden bg-white">
+    <div className="flex flex-1 min-h-0 rounded-xl border border-navy-200 overflow-hidden bg-white">
       {/* Thread sidebar */}
       <div className="w-64 border-r border-navy-100 flex flex-col shrink-0">
         <ThreadList
@@ -140,6 +155,7 @@ export function AssistantShell() {
           messages={activeMessages}
           streamingContent={streamingContent}
           isStreaming={isStreaming}
+          isWaitingForResponse={isWaitingForResponse}
           isLoading={!!activeThreadId && messagesQuery.isLoading}
         />
 
@@ -153,6 +169,7 @@ export function AssistantShell() {
           <ChatInput
             threadId={activeThreadId}
             isStreaming={isStreaming}
+            isWaitingForResponse={isWaitingForResponse}
             disabled={wsStatus !== "connected"}
           />
         </div>

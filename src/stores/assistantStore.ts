@@ -55,6 +55,11 @@ interface AssistantState {
   messages: Record<string, ConversationMessage[]>;
   streamingContent: string;
   isStreaming: boolean;
+  // True from the moment a message is sent until either the first
+  // assistant_token or a terminal event (assistant_complete/error)
+  // arrives — the gap where the backend is classifying intent and
+  // running retrieval tools server-side, before any real text exists.
+  isWaitingForResponse: boolean;
   wsStatus: WsStatus;
   pendingDraft: AssistantDraft | null;
 }
@@ -65,6 +70,7 @@ interface AssistantActions {
   setActiveThread: (id: string | null) => void;
   setMessages: (threadId: string, messages: ConversationMessage[]) => void;
   addMessage: (threadId: string, message: ConversationMessage) => void;
+  setWaitingForResponse: (waiting: boolean) => void;
   appendToken: (token: string) => void;
   clearStreaming: () => void;
   setPendingDraft: (draft: AssistantDraft | null) => void;
@@ -78,6 +84,7 @@ export const useAssistantStore = create<AssistantState & AssistantActions>(
     messages: {},
     streamingContent: "",
     isStreaming: false,
+    isWaitingForResponse: false,
     wsStatus: "disconnected",
     pendingDraft: null,
 
@@ -101,13 +108,17 @@ export const useAssistantStore = create<AssistantState & AssistantActions>(
         },
       })),
 
+    setWaitingForResponse: (waiting) => set({ isWaitingForResponse: waiting }),
+
     appendToken: (token) =>
       set((s) => ({
         streamingContent: s.streamingContent + token,
         isStreaming: true,
+        isWaitingForResponse: false,
       })),
 
-    clearStreaming: () => set({ streamingContent: "", isStreaming: false }),
+    clearStreaming: () =>
+      set({ streamingContent: "", isStreaming: false, isWaitingForResponse: false }),
 
     setPendingDraft: (draft) => set({ pendingDraft: draft }),
 

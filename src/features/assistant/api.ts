@@ -69,6 +69,13 @@ export async function getThread(threadId: string): Promise<ConversationDetail> {
     ...detail,
     messages: detail.messages.map((m) => ({
       ...m,
+      // Backend persists role as "USER"/"ASSISTANT"/"SYSTEM" (see
+      // chat_service.py's add_message calls) — the WS-live path
+      // hardcodes lowercase locally so it always looked right when
+      // sending, but REST-loaded history (thread switch, reload) came
+      // through uppercase, which ChatMessageBubble's role === "user"
+      // check never matched, so every message rendered identically.
+      role: m.role.toLowerCase() as ConversationMessage["role"],
       guardrails: normalizeGuardrails(m.guardrails),
       tool_trace: normalizeToolTrace(m.tool_trace),
       citations: normalizeCitations(m.citations),

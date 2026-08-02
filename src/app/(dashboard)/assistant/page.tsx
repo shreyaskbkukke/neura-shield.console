@@ -7,8 +7,9 @@ import { AssistantShell } from "@/features/assistant/components/AssistantShell";
 export default function AssistantPage() {
   return (
     <RequirePermission permission="assistant.use">
-      <PageSurface>
+      <PageSurface className="h-full flex flex-col">
         <PageHeader
+          className="shrink-0"
           title="AI Assistant"
           description="Natural language intelligence queries and investigation decision support"
           icon={MessageSquare}
