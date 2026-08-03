@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   fetchHotspots,
+  fetchGridHotspots,
   fetchHotspotDetail,
   fetchHotspotCrimes,
   fetchHotspotExplanation,
@@ -14,6 +15,13 @@ export function useHotspots(params: Record<string, string | number | boolean> = 
   return useQuery({
     queryKey: ["map", "hotspots", params],
     queryFn: () => fetchHotspots(params),
+  });
+}
+
+export function useGridHotspots(params: Record<string, string | number | boolean> = {}) {
+  return useQuery({
+    queryKey: ["map", "grid-hotspots", params],
+    queryFn: () => fetchGridHotspots(params),
   });
 }
 

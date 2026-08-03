@@ -8,10 +8,15 @@ import type {
   DistrictRiskDetail,
   StationRiskListResponse,
   OffenderRiskListResponse,
+  GridHotspotResponse,
 } from "./types";
 
 export function fetchHotspots(params: Record<string, string | number | boolean> = {}) {
   return apiGet<HotspotListResponse>("/intelligence/hotspots", { limit: 50, ...params });
+}
+
+export function fetchGridHotspots(params: Record<string, string | number | boolean> = {}) {
+  return apiGet<GridHotspotResponse>("/analytics/hotspots", { limit: 100, ...params });
 }
 
 export function fetchHotspotDetail(id: string) {

@@ -136,3 +136,21 @@ export interface OffenderRiskListResponse {
   limit: number;
   items: OffenderRiskItem[];
 }
+
+export interface GridHotspotItem {
+  hotspot_id: string;
+  center_latitude: number;
+  center_longitude: number;
+  district_id: string;
+  district_name: string;
+  crime_count: number;
+  high_severity_count: number;
+  avg_severity_score: number | null;
+  top_category: string;
+  risk_score: number;
+}
+
+export interface GridHotspotResponse {
+  items: GridHotspotItem[];
+}
+

@@ -8,8 +8,13 @@ import { ErrorState } from "@/components/foundation/ErrorState";
 import { HotspotGoogleMap } from "./HotspotGoogleMap";
 import { SpatialRiskGrid } from "./SpatialRiskGrid";
 import { HotspotDetailDrawer } from "./HotspotDetailDrawer";
-import { useHotspots, useDistrictRiskList } from "../hooks";
+import { useHotspots, useGridHotspots, useDistrictRiskList } from "../hooks";
 import type { MapFilters } from "../types";
+
+const LAYER_OPTIONS = [
+  { label: "DBSCAN Clusters", value: "clusters" },
+  { label: "Spatial Grid (1km)", value: "grid" },
+];
 
 const RISK_OPTIONS = [
   { label: "All Risk Levels", value: "" },
@@ -28,16 +33,23 @@ const DEFAULT_FILTERS: MapFilters = { riskLevel: "", activeOnly: true, districtI
 
 export function MapScreen() {
   const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
+  const [overlayType, setOverlayType] = useState<"clusters" | "grid">("clusters");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
 
+  // 1. Fetch DBSCAN clusters
   const hotspotParams: Record<string, string | number | boolean> = {};
   if (filters.riskLevel) hotspotParams.risk_level = filters.riskLevel;
   if (filters.activeOnly) hotspotParams.active_only = true;
-
   const hotspotsQuery = useHotspots(hotspotParams);
+
+  // 2. Fetch Spatial Grid
+  const gridHotspotsQuery = useGridHotspots({});
+
+  // 3. Fetch District Risk list
   const districtRiskQuery = useDistrictRiskList();
 
+  // Filter DBSCAN clusters based on search query
   const allHotspots = hotspotsQuery.data?.items ?? [];
   const filteredHotspots = allHotspots.filter((hs) => {
     if (!searchQuery.trim()) return true;
@@ -52,22 +64,52 @@ export function MapScreen() {
     );
   });
 
+  // Filter Grid cell hotspots based on search query
+  const allGridHotspots = gridHotspotsQuery.data?.items ?? [];
+  const filteredGridHotspots = allGridHotspots.filter((ghs) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    const districtName = ghs.district_name?.toLowerCase() ?? "";
+    const category = ghs.top_category?.toLowerCase() ?? "";
+    return (
+      districtName.includes(query) ||
+      category.includes(query)
+    );
+  });
+
+  const selectedGridCell = overlayType === "grid"
+    ? filteredGridHotspots.find((ghs) => ghs.hotspot_id === selectedHotspotId)
+    : null;
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-4">
         <FilterBar className="mb-0">
           <FilterSelect
-            label="Risk Level"
-            value={filters.riskLevel}
-            options={RISK_OPTIONS}
-            onChange={(v) => setFilters((f) => ({ ...f, riskLevel: v }))}
+            label="Layer"
+            value={overlayType}
+            options={LAYER_OPTIONS}
+            onChange={(v) => {
+              setOverlayType(v as "clusters" | "grid");
+              setSelectedHotspotId(null);
+            }}
           />
-          <FilterSelect
-            label="Show"
-            value={String(filters.activeOnly)}
-            options={ACTIVE_OPTIONS}
-            onChange={(v) => setFilters((f) => ({ ...f, activeOnly: v === "true" }))}
-          />
+          {overlayType === "clusters" && (
+            <>
+              <FilterSelect
+                label="Risk Level"
+                value={filters.riskLevel}
+                options={RISK_OPTIONS}
+                onChange={(v) => setFilters((f) => ({ ...f, riskLevel: v }))}
+              />
+              <FilterSelect
+                label="Show"
+                value={String(filters.activeOnly)}
+                options={ACTIVE_OPTIONS}
+                onChange={(v) => setFilters((f) => ({ ...f, activeOnly: v === "true" }))}
+              />
+            </>
+          )}
           {/* Search Bar Input */}
           <div className="relative inline-flex items-center bg-white border border-navy-200 rounded-full px-3 py-1.5 focus-within:ring-2 focus-within:ring-brand-500 focus-within:border-brand-500 transition-all duration-200 shadow-sm w-60">
             <Search size={12} className="text-navy-400 mr-2 shrink-0" />
@@ -98,7 +140,9 @@ export function MapScreen() {
         {/* Left Side: Map Container */}
         <div className="lg:col-span-7 xl:col-span-8 bg-white rounded-2xl shadow-sm lg:sticky lg:top-[72px]">
           <HotspotGoogleMap
+            overlayType={overlayType}
             hotspots={filteredHotspots}
+            gridHotspots={filteredGridHotspots}
             selectedId={selectedHotspotId}
             onSelectHotspot={setSelectedHotspotId}
             heightClass="h-[600px]"
@@ -107,17 +151,22 @@ export function MapScreen() {
 
         {/* Right Side: District overview and Hotspots list */}
         <div className="lg:col-span-5 xl:col-span-4 h-[600px] overflow-y-auto pr-1 space-y-5">
-          {hotspotsQuery.isError ? (
+          {hotspotsQuery.isError || gridHotspotsQuery.isError ? (
             <ErrorState
-              title="Failed to load hotspot data"
-              message={hotspotsQuery.error?.message}
-              onRetry={() => void hotspotsQuery.refetch()}
+              title="Failed to load map spatial data"
+              message={hotspotsQuery.error?.message ?? gridHotspotsQuery.error?.message}
+              onRetry={() => {
+                void hotspotsQuery.refetch();
+                void gridHotspotsQuery.refetch();
+              }}
             />
           ) : (
             <SpatialRiskGrid
+              overlayType={overlayType}
               hotspots={filteredHotspots}
+              gridHotspots={filteredGridHotspots}
               districtRisk={districtRiskQuery.data?.items ?? []}
-              isLoadingHotspots={hotspotsQuery.isLoading}
+              isLoadingHotspots={overlayType === "clusters" ? hotspotsQuery.isLoading : gridHotspotsQuery.isLoading}
               isLoadingRisk={districtRiskQuery.isLoading}
               selectedId={selectedHotspotId}
               onSelectHotspot={setSelectedHotspotId}
@@ -128,6 +177,7 @@ export function MapScreen() {
 
       <HotspotDetailDrawer
         hotspotId={selectedHotspotId}
+        selectedGridCell={selectedGridCell}
         onClose={() => setSelectedHotspotId(null)}
       />
     </div>

@@ -5,7 +5,7 @@ import { RiskBadge } from "@/components/grounded/RiskBadge";
 import { Skeleton } from "@/components/foundation/Skeleton";
 import { EmptyState } from "@/components/foundation/EmptyState";
 import { cn } from "@/lib/utils";
-import type { HotspotListItem, DistrictRiskItem } from "../types";
+import type { HotspotListItem, DistrictRiskItem, GridHotspotItem } from "../types";
 
 function riskDotColor(level: string | null): string {
   switch (level?.toUpperCase()) {
@@ -16,8 +16,17 @@ function riskDotColor(level: string | null): string {
   }
 }
 
+function getGridRiskLevel(score: number): string {
+  if (score >= 80) return "CRITICAL";
+  if (score >= 50) return "HIGH";
+  if (score >= 25) return "MEDIUM";
+  return "LOW";
+}
+
 interface SpatialRiskGridProps {
+  overlayType: "clusters" | "grid";
   hotspots: HotspotListItem[];
+  gridHotspots: GridHotspotItem[];
   districtRisk: DistrictRiskItem[];
   isLoadingHotspots: boolean;
   isLoadingRisk: boolean;
@@ -26,13 +35,15 @@ interface SpatialRiskGridProps {
 }
 
 export function SpatialRiskGrid({
+  overlayType,
   hotspots,
+  gridHotspots,
   districtRisk,
   isLoadingHotspots,
   isLoadingRisk,
   selectedId,
   onSelectHotspot,
-}: SpatialRiskGridProps) {
+}: Readonly<SpatialRiskGridProps>) {
   return (
     <div className="space-y-5">
       {/* District risk summary */}
@@ -84,45 +95,81 @@ export function SpatialRiskGrid({
         )}
       </div>
 
-      {/* Hotspot list */}
+      {/* Hotspots or Grid list based on overlayType */}
       <div>
         <p className="text-xs font-semibold text-navy-600 uppercase tracking-wide mb-2">
-          Active Hotspots — click to inspect
+          {overlayType === "clusters" ? "Active Hotspots — click to inspect" : "Grid Cells (1km) — click to inspect"}
         </p>
+
         {isLoadingHotspots ? (
           <div className="space-y-2">
             {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-14" />)}
           </div>
-        ) : hotspots.length === 0 ? (
-          <EmptyState icon={MapPin} title="No hotspots found" description="Adjust filters or run the hotspot job" />
+        ) : overlayType === "clusters" ? (
+          hotspots.length === 0 ? (
+            <EmptyState icon={MapPin} title="No hotspots found" description="Adjust filters or run the hotspot job" />
+          ) : (
+            <div className="space-y-1.5">
+              {hotspots.map((hs) => (
+                <button
+                  key={hs.id}
+                  onClick={() => onSelectHotspot(hs.id)}
+                  className={cn(
+                    "w-full text-left rounded-xl border px-3 py-2.5 transition-colors",
+                    selectedId === hs.id
+                      ? "border-brand-300 bg-brand-50"
+                      : "border-navy-200 bg-white hover:bg-navy-50",
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className={cn("w-2.5 h-2.5 rounded-full shrink-0", riskDotColor(hs.risk_level))} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-navy-800 truncate">
+                        {hs.district?.name ?? "Unknown"}{hs.police_station ? ` · ${hs.police_station.name}` : ""}
+                      </p>
+                      <p className="text-[11px] text-navy-500">
+                        {hs.crime_count} crimes · {hs.top_category ?? "Mixed"}
+                        {hs.radius_meters && ` · ${(hs.radius_meters / 1000).toFixed(1)}km radius`}
+                      </p>
+                    </div>
+                    {hs.risk_level && <RiskBadge riskLevel={hs.risk_level} />}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )
+        ) : gridHotspots.length === 0 ? (
+          <EmptyState icon={MapPin} title="No grid data found" description="Adjust filters or verify crime ingestion" />
         ) : (
           <div className="space-y-1.5">
-            {hotspots.map((hs) => (
-              <button
-                key={hs.id}
-                onClick={() => onSelectHotspot(hs.id)}
-                className={cn(
-                  "w-full text-left rounded-xl border px-3 py-2.5 transition-colors",
-                  selectedId === hs.id
-                    ? "border-brand-300 bg-brand-50"
-                    : "border-navy-200 bg-white hover:bg-navy-50",
-                )}
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className={cn("w-2.5 h-2.5 rounded-full shrink-0", riskDotColor(hs.risk_level))} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-navy-800 truncate">
-                      {hs.district?.name ?? "Unknown"}{hs.police_station ? ` · ${hs.police_station.name}` : ""}
-                    </p>
-                    <p className="text-[11px] text-navy-500">
-                      {hs.crime_count} crimes · {hs.top_category ?? "Mixed"}
-                      {hs.radius_meters && ` · ${(hs.radius_meters / 1000).toFixed(1)}km radius`}
-                    </p>
+            {gridHotspots.map((ghs) => {
+              const riskLevel = getGridRiskLevel(ghs.risk_score);
+              return (
+                <button
+                  key={ghs.hotspot_id}
+                  onClick={() => onSelectHotspot(ghs.hotspot_id)}
+                  className={cn(
+                    "w-full text-left rounded-xl border px-3 py-2.5 transition-colors",
+                    selectedId === ghs.hotspot_id
+                      ? "border-brand-300 bg-brand-50"
+                      : "border-navy-200 bg-white hover:bg-navy-50",
+                  )}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className={cn("w-2.5 h-2.5 rounded-full shrink-0", riskDotColor(riskLevel))} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-navy-800 truncate">
+                        {ghs.district_name} Cell ({ghs.center_latitude.toFixed(4)}, {ghs.center_longitude.toFixed(4)})
+                      </p>
+                      <p className="text-[11px] text-navy-500">
+                        {ghs.crime_count} crimes · {ghs.top_category ?? "Mixed"} · Score: {ghs.risk_score.toFixed(1)}
+                      </p>
+                    </div>
+                    <RiskBadge riskLevel={riskLevel} />
                   </div>
-                  {hs.risk_level && <RiskBadge riskLevel={hs.risk_level} />}
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
